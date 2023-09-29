@@ -1,0 +1,16 @@
+
+#ifndef HAL_STEPPERMOTOR_STEPPERMOTOR_CFG_H_
+#define HAL_STEPPERMOTOR_STEPPERMOTOR_CFG_H_
+
+#define Coil_Blue   DIO_u8_PIN0
+#define Coil_Pink   DIO_u8_PIN1
+#define Coil_Yellow DIO_u8_PIN2
+#define Coil_Orange DIO_u8_PIN3
+
+#define COIL_BLUE_PORT DIO_u8_PORTD
+#define COIL_PINK_PORT DIO_u8_PORTD
+#define COIL_YELLOW_PORT DIO_u8_PORTD
+#define COIL_ORANGE_PORT DIO_u8_PORTD
+
+
+#endif /* HAL_STEPPERMOTOR_STEPPERMOTOR_CFG_H_ */
