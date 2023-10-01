@@ -1,7 +1,79 @@
 #include "../../MCAL/DIO/DIO_int.h"
 #include "steppermotor_int.h"
+#include "avr/delay.h"
 
 
+
+
+// This pattern represents one step in a clockwise direction
+static void Stepper_RotateCW(void)
+{
+    // Step 1: Activate the Blue coil while keeping others off
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_HIGH);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5); // Delay for motor stability
+
+    // Step 2: Activate the Pink coil while keeping others off
+    // This effectively rotates the stepper motor by one step in a clockwise direction
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_HIGH);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5);
+
+    // Step 3: Activate the Yellow coil while keeping others off
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_HIGH);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5);
+
+    // Step 4: Activate the Orange coil while keeping others off
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_HIGH);
+    _delay_ms(5);
+
+    // The above pattern represents one step in a clockwise direction
+}
+
+// This pattern represents one step in an anti-clockwise direction
+static void Stepper_RotateACW(void)
+{
+    // Step 1: Activate the Orange coil while keeping others off
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_HIGH);
+    _delay_ms(5);
+
+    // Step 2: Activate the Pink coil while keeping others off
+    // This effectively rotates the stepper motor by one step in an anti-clockwise direction
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_HIGH);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5);
+
+    // Step 3: Activate the Blue coil while keeping others off
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_HIGH);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5);
+
+    // Step 4: Deactivate all coils
+    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
+    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
+    _delay_ms(5);
+
+    // The above pattern represents one step in an anti-clockwise direction
+}
 
 
 StepperM_tenuErrorStatus Stepper_Rotate(u32 Copy_u8Angle, u8 Copy_u8Direction, u16 Copy_u16TimeInMs)
@@ -27,7 +99,7 @@ StepperM_tenuErrorStatus Stepper_Rotate(u32 Copy_u8Angle, u8 Copy_u8Direction, u
 	        for (u16 Local_u16Index = 0; Local_u16Index < Local_u16NumOfSteps; Local_u16Index++)
 	        {
 	            Stepper_RotateCW();
-	            delay_ms(Copy_u16StepDelay);
+	            _delay_ms(Copy_u16StepDelay);
 
 	        }
 	    }
@@ -36,7 +108,7 @@ StepperM_tenuErrorStatus Stepper_Rotate(u32 Copy_u8Angle, u8 Copy_u8Direction, u
 	        for (u16 Local_u16Index = 0; Local_u16Index < Local_u16NumOfSteps; Local_u16Index++)
 	        {
 	            Stepper_RotateACW();
-	            delay_ms(Copy_u16StepDelay);
+	            _delay_ms(Copy_u16StepDelay);
 	        }
 	    }
 	    return STEPPER_OK;
@@ -49,74 +121,6 @@ StepperM_tenuErrorStatus Stepper_Rotate(u32 Copy_u8Angle, u8 Copy_u8Direction, u
 
 }
 
-// This pattern represents one step in a clockwise direction
-static void Stepper_RotateCW(void)
-{
-    // Step 1: Activate the Blue coil while keeping others off
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_HIGH);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5); // Delay for motor stability
 
-    // Step 2: Activate the Pink coil while keeping others off
-    // This effectively rotates the stepper motor by one step in a clockwise direction
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_HIGH);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5);
-
-    // Step 3: Activate the Yellow coil while keeping others off
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_HIGH);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5);
-
-    // Step 4: Activate the Orange coil while keeping others off
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_HIGH);
-    delay_ms(5);
-
-    // The above pattern represents one step in a clockwise direction
-}
-
-// This pattern represents one step in an anti-clockwise direction
-static void Stepper_RotateACW(void)
-{
-    // Step 1: Activate the Orange coil while keeping others off
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_HIGH);
-    delay_ms(5);
-
-    // Step 2: Activate the Pink coil while keeping others off
-    // This effectively rotates the stepper motor by one step in an anti-clockwise direction
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_HIGH);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5);
-
-    // Step 3: Activate the Blue coil while keeping others off
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_HIGH);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5);
-
-    // Step 4: Deactivate all coils
-    DIO_enuSetPinValue(COIL_BLUE_PORT, Coil_Blue, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_PINK_PORT, Coil_Pink, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_YELLOW_PORT, Coil_Yellow, DIO_u8_LOW);
-    DIO_enuSetPinValue(COIL_ORANGE_PORT, Coil_Orange, DIO_u8_LOW);
-    delay_ms(5);
-
-    // The above pattern represents one step in an anti-clockwise direction
-}
 
 
