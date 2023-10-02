@@ -16,20 +16,20 @@ int main (void)
 		if (IsSwitchPressed(DIO_u8_PORTD, 0) == SWITCH_PRESSED )
 		{
 			LCD_enuSendInstruction(LCD_u8_CLEAR_DISPLAY);
-			DcMotor_SetDirection(CLOCKWISE);
 			LCD_voidGotoXY(1, 0);
 			LCD_vidSendStr("The Direction is: ");
 			LCD_voidGotoXY(2, 0);
 			LCD_vidSendStr("CLOCKWISE.");
+			DcMotor_SetDirection(CLOCKWISE);
 		}
 		else if (IsSwitchPressed(DIO_u8_PORTD, 1) == SWITCH_PRESSED)
 		{
 			LCD_enuSendInstruction(LCD_u8_CLEAR_DISPLAY);
-			DcMotor_SetDirection(ANTICLOCKWISE);
 			LCD_voidGotoXY(1, 0);
 			LCD_vidSendStr("The Direction is: ");
 			LCD_voidGotoXY(2, 0);
 			LCD_vidSendStr("ANTICLOCKWISE.");
+			DcMotor_SetDirection(ANTICLOCKWISE);
 		}
 	}
 
